@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/app",
+      "destination": "https://aaaasilamin-0ac06c45a8b6.herokuapp.com/"
+    },
+    {
+      "source": "/app/(.*)",
+      "destination": "https://aaaasilamin-0ac06c45a8b6.herokuapp.com/$1"
+    }
+  ]
+}
