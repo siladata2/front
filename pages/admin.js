@@ -577,7 +577,7 @@ export default function Admin() {
             </button>
 
             <div className="footer-text">
-              🔒 Umeingia kwa <span>PIN</span> iliyolindwa
+              🔒 Umeingia kwa <span>PIN</span> iliyolina
             </div>
           </>
         )}
