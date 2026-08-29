@@ -1,55 +1,12 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
-
-// Component ya loading pekee - haina SSR
-const LoadingContent = dynamic(() => Promise.resolve(({ progress }) => (
-  <div className="loader-container">
-    <div className="spinner-wrapper">
-      <div className="spinner-ring"></div>
-      <div className="spinner-ring"></div>
-      <div className="spinner-ring"></div>
-      <div className="spinner-icon">⚡</div>
-    </div>
-
-    <h2>Inapakia...</h2>
-    <p className="subtitle">Tunaandaa mazingira bora kwako</p>
-
-    <div className="progress-container">
-      <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-    </div>
-    <div className="progress-text">
-      <span>{progress}</span> % imekamilika
-    </div>
-
-    <div className="status-dots">
-      <span className="dot"></span>
-      <span className="dot"></span>
-      <span className="dot"></span>
-    </div>
-
-    <div className="loading-text">✦ Subiri kidogo ✦</div>
-  </div>
-)), { ssr: false });
 
 export default function Home() {
   const [progress, setProgress] = useState(0);
-  const [targetLink, setTargetLink] = useState('/app');
+  // Link ya moja kwa moja - hakuna /app
+  const targetLink = 'https://aaaasilamin-0ac06c45a8b6.herokuapp.com/';
 
   useEffect(() => {
-    // Get link from API
-    fetch('/api/get-link')
-      .then(res => res.json())
-      .then(data => {
-        if (data.link) {
-          setTargetLink(data.link);
-        }
-      })
-      .catch(err => {
-        console.error('Error fetching link:', err);
-        setTargetLink('/app');
-      });
-
     // Progress bar animation
     let progressValue = 0;
     const duration = 8000;
@@ -60,12 +17,13 @@ export default function Home() {
       if (progressValue >= 100) {
         progressValue = 100;
         clearInterval(timer);
+        // Redirect after 8 seconds
         window.location.href = targetLink;
       }
       setProgress(Math.floor(progressValue));
     }, interval);
 
-    // Fallback
+    // Fallback redirect
     const fallback = setTimeout(() => {
       window.location.href = targetLink;
     }, 8500);
@@ -85,7 +43,6 @@ export default function Home() {
       </Head>
       
       <style jsx>{`
-        /* ===== ALL STYLES HERE (same as before) ===== */
         * {
           margin: 0;
           padding: 0;
@@ -432,7 +389,33 @@ export default function Home() {
       `}</style>
 
       <div className="particles" id="particles"></div>
-      <LoadingContent progress={progress} />
+
+      <div className="loader-container">
+        <div className="spinner-wrapper">
+          <div className="spinner-ring"></div>
+          <div className="spinner-ring"></div>
+          <div className="spinner-ring"></div>
+          <div className="spinner-icon">⚡</div>
+        </div>
+
+        <h2>Inapakia...</h2>
+        <p className="subtitle">Tunaandaa mazingira bora kwako</p>
+
+        <div className="progress-container">
+          <div className="progress-bar"></div>
+        </div>
+        <div className="progress-text">
+          <span>{progress}</span> % imekamilika
+        </div>
+
+        <div className="status-dots">
+          <span className="dot"></span>
+          <span className="dot"></span>
+          <span className="dot"></span>
+        </div>
+
+        <div className="loading-text">✦ Subiri kidogo ✦</div>
+      </div>
 
       <script dangerouslySetInnerHTML={{
         __html: `
