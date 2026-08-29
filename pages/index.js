@@ -1,24 +1,52 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
+
+// Component ya loading pekee - haina SSR
+const LoadingContent = dynamic(() => Promise.resolve(({ progress }) => (
+  <div className="loader-container">
+    <div className="spinner-wrapper">
+      <div className="spinner-ring"></div>
+      <div className="spinner-ring"></div>
+      <div className="spinner-ring"></div>
+      <div className="spinner-icon">⚡</div>
+    </div>
+
+    <h2>Inapakia...</h2>
+    <p className="subtitle">Tunaandaa mazingira bora kwako</p>
+
+    <div className="progress-container">
+      <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+    </div>
+    <div className="progress-text">
+      <span>{progress}</span> % imekamilika
+    </div>
+
+    <div className="status-dots">
+      <span className="dot"></span>
+      <span className="dot"></span>
+      <span className="dot"></span>
+    </div>
+
+    <div className="loading-text">✦ Subiri kidogo ✦</div>
+  </div>
+)), { ssr: false });
 
 export default function Home() {
   const [progress, setProgress] = useState(0);
-  const [showContent, setShowContent] = useState(false);
   const [targetLink, setTargetLink] = useState('/app');
 
   useEffect(() => {
-    // Get link from API (for admin to change)
+    // Get link from API
     fetch('/api/get-link')
       .then(res => res.json())
       .then(data => {
         if (data.link) {
-          // Use the link from database
           setTargetLink(data.link);
         }
       })
       .catch(err => {
         console.error('Error fetching link:', err);
-        // Fallback to local proxy
         setTargetLink('/app');
       });
 
@@ -32,29 +60,21 @@ export default function Home() {
       if (progressValue >= 100) {
         progressValue = 100;
         clearInterval(timer);
-        // Show content after 8 seconds
-        setShowContent(true);
+        window.location.href = targetLink;
       }
       setProgress(Math.floor(progressValue));
     }, interval);
 
-    // Fallback - show content after 8.5 seconds
+    // Fallback
     const fallback = setTimeout(() => {
-      setShowContent(true);
+      window.location.href = targetLink;
     }, 8500);
 
     return () => {
       clearInterval(timer);
       clearTimeout(fallback);
     };
-  }, []);
-
-  // If showContent is true, redirect to the target
-  useEffect(() => {
-    if (showContent) {
-      window.location.href = targetLink;
-    }
-  }, [showContent, targetLink]);
+  }, [targetLink]);
 
   return (
     <>
@@ -65,6 +85,7 @@ export default function Home() {
       </Head>
       
       <style jsx>{`
+        /* ===== ALL STYLES HERE (same as before) ===== */
         * {
           margin: 0;
           padding: 0;
@@ -83,7 +104,6 @@ export default function Home() {
           margin: 0;
         }
 
-        /* Animated gradient background */
         body::before {
           content: '';
           position: fixed;
@@ -105,7 +125,6 @@ export default function Home() {
           100% { background-position: 0% 50%; }
         }
 
-        /* Floating particles */
         .particles {
           position: fixed;
           top: 0;
@@ -145,7 +164,6 @@ export default function Home() {
           }
         }
 
-        /* Main container - Glassmorphism */
         .loader-container {
           position: relative;
           z-index: 2;
@@ -156,18 +174,10 @@ export default function Home() {
           -webkit-backdrop-filter: blur(30px);
           border-radius: 40px;
           border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 
-            0 30px 100px rgba(0, 0, 0, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
           animation: containerFade 0.8s cubic-bezier(0.16, 1, 0.3, 1);
           max-width: 520px;
           width: 90%;
-          transition: all 0.3s ease;
-        }
-
-        .loader-container:hover {
-          transform: scale(1.02);
-          box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
         }
 
         @keyframes containerFade {
@@ -181,7 +191,6 @@ export default function Home() {
           }
         }
 
-        /* Premium spinner */
         .spinner-wrapper {
           position: relative;
           width: 110px;
@@ -238,7 +247,6 @@ export default function Home() {
           }
         }
 
-        /* Center icon */
         .spinner-icon {
           position: absolute;
           top: 50%;
@@ -259,7 +267,6 @@ export default function Home() {
           }
         }
 
-        /* Text styles */
         h2 {
           font-size: 34px;
           font-weight: 800;
@@ -281,7 +288,6 @@ export default function Home() {
           letter-spacing: 2px;
         }
 
-        /* Premium progress bar */
         .progress-container {
           width: 100%;
           height: 8px;
@@ -342,7 +348,6 @@ export default function Home() {
           font-size: 18px;
         }
 
-        /* Status dots */
         .status-dots {
           display: flex;
           justify-content: center;
@@ -376,7 +381,6 @@ export default function Home() {
           }
         }
 
-        /* Loading text animation */
         .loading-text {
           margin-top: 20px;
           font-size: 12px;
@@ -391,7 +395,6 @@ export default function Home() {
           50% { opacity: 0.6; }
         }
 
-        /* Responsive */
         @media (max-width: 640px) {
           .loader-container {
             padding: 35px 25px;
@@ -426,47 +429,13 @@ export default function Home() {
             font-size: 22px;
           }
         }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-          body {
-            background: #0a0a0a;
-          }
-        }
       `}</style>
 
       <div className="particles" id="particles"></div>
-
-      <div className="loader-container">
-        <div className="spinner-wrapper">
-          <div className="spinner-ring"></div>
-          <div className="spinner-ring"></div>
-          <div className="spinner-ring"></div>
-          <div className="spinner-icon">⚡</div>
-        </div>
-
-        <h2>Inapakia...</h2>
-        <p className="subtitle">Tunaandaa mazingira bora kwako</p>
-
-        <div className="progress-container">
-          <div className="progress-bar"></div>
-        </div>
-        <div className="progress-text">
-          <span>{progress}</span> % imekamilika
-        </div>
-
-        <div className="status-dots">
-          <span className="dot"></span>
-          <span className="dot"></span>
-          <span className="dot"></span>
-        </div>
-
-        <div className="loading-text">✦ Subiri kidogo ✦</div>
-      </div>
+      <LoadingContent progress={progress} />
 
       <script dangerouslySetInnerHTML={{
         __html: `
-          // Create floating particles
           (function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#f093fb', '#f5576c', '#667eea', '#764ba2', '#43e97b', '#38f9d7'];
@@ -486,10 +455,6 @@ export default function Home() {
               container.appendChild(particle);
             }
           })();
-
-          // Log that everything is working
-          console.log('🚀 Loading page initialized');
-          console.log('⏱️ Will redirect in 8 seconds');
         `
       }} />
     </>
