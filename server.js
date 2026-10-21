@@ -3,7 +3,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
 
-const TARGET = "https://aaaaasilaapi-839f6b7fe1e3.herokuapp.com/";
+const TARGET = "https://aaaaaendpoint-da595330a3b0.herokuapp.com";
 
 app.use(
   "/",
@@ -16,7 +16,7 @@ app.use(
       proxyReq: (proxyReq) => {
         proxyReq.setHeader(
           "Host",
-          "aaaaasilaapi-839f6b7fe1e3.herokuapp.com"
+          "aaaaaendpoint-da595330a3b0.herokuapp.com"
         );
       }
     }
